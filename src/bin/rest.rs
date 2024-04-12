@@ -1,12 +1,18 @@
-use std::time::Duration;
-
 use realworld::{router, server::AppState};
 use sea_orm::{ConnectOptions, Database};
+use std::time::Duration;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
     // initialize tracing
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "realworld=info,tower_http=debug,axum::rejection=trace".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
     dotenv::dotenv().ok();
 
@@ -24,7 +30,7 @@ async fn main() {
     // run it with hyper on localhost:8080
     let addr = "0.0.0.0:8080";
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, router::init_router(state))
-        .await
-        .unwrap();
+    tracing::info!("listening on {}", addr);
+    let app = router::init_router(state);
+    axum::serve(listener, app).await.unwrap();
 }

@@ -1,10 +1,11 @@
 use crate::dto::common::{EchoReq, EchoResp, SystemTimeResp};
 use axum::{http::StatusCode, Json};
-use chrono::Utc;
+use chrono::Local;
 
 pub async fn system_time() -> (StatusCode, Json<SystemTimeResp>) {
-    let now = Utc::now();
+    let now = Local::now();
     let rsp = SystemTimeResp { t: now.timestamp() };
+    tracing::info!("now: {:?}", now.to_rfc3339());
     (StatusCode::OK, Json(rsp))
 }
 
