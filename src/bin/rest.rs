@@ -1,6 +1,4 @@
-use realworld::{router, server::AppState};
-use sea_orm::{ConnectOptions, Database};
-use std::time::Duration;
+use realworld::{config::AppConfig, router, server::AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -16,20 +14,13 @@ async fn main() {
 
     dotenv::dotenv().ok();
 
-    let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
-    let mut opts = ConnectOptions::new(db_url);
-    opts.max_connections(100);
-    opts.connect_timeout(Duration::from_secs(8));
-    opts.sqlx_logging(true);
-    let conn = Database::connect(opts)
-        .await
-        .expect("Database connection failed");
-
-    let state = AppState { db: conn };
+    let path = std::env::var("CONFIG_FILE").expect("CONFIG_FILE not found");
+    let config = AppConfig::load_from_file(path);
+    let state = AppState::new(config.clone()).await;
 
     // run it with hyper on localhost:8080
-    let addr = "0.0.0.0:8080";
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    let addr = config.server.get_addr();
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     tracing::info!("listening on {}", addr);
     let app = router::init_router(state);
     axum::serve(listener, app).await.unwrap();
