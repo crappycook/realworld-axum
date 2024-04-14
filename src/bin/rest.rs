@@ -16,7 +16,7 @@ async fn main() {
 
     let path = std::env::var("CONFIG_FILE").expect("CONFIG_FILE not found");
     let config = AppConfig::load_from_file(path);
-    let state = AppState::new(config.clone()).await;
+    let state = AppState::new(&config).await;
 
     // run it with hyper on localhost:8080
     let addr = config.server.get_addr();

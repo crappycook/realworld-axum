@@ -8,8 +8,8 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub async fn new(config: AppConfig) -> Self {
-        let db = database::init_conn_from_config(config.db).await;
+    pub async fn new(config: &AppConfig) -> Self {
+        let db = database::init_conn_from_config(&config.db).await;
         Self { db }
     }
 }

@@ -44,7 +44,7 @@ pub struct DatabaseConfig {
 impl DatabaseConfig {
     pub fn get_url(&self) -> String {
         format!(
-            "mysql://{}:{}@{}:{}/{}",
+            "mysql://{}:{}@{}:{}/{}?charset=utf8mb4&parseTime=True&loc=Local",
             self.username, self.password, self.host, self.port, self.database
         )
     }
@@ -60,7 +60,7 @@ mod tests {
 
         let app_config = AppConfig::load_from_file("src/config/config.toml".to_string());
         println!("{:?}", app_config);
-        let conn = database::init_conn_from_config(app_config.db).await;
+        let conn = database::init_conn_from_config(&app_config.db).await;
         conn.ping().await.expect("Database ping failed.");
     }
 }
