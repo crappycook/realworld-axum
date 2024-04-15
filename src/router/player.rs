@@ -3,16 +3,13 @@ use axum::{
     Router,
 };
 
-use crate::{
-    handler::{common, player},
-    server::AppState,
-};
+use crate::{handler::player, server::AppState};
 
 pub fn register_router() -> Router<AppState> {
     Router::new().nest(
         "/player",
         Router::new()
-            .route("/get", get(common::system_time))
+            .route("/:id", get(player::get))
             .route("/add", post(player::add)),
     )
 }

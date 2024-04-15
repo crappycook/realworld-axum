@@ -10,3 +10,10 @@ pub struct AddPlayerReq {
 pub struct AddPlayerResp {
     pub success: bool,
 }
+
+#[derive(Serialize, Debug)]
+pub struct PlayerResp {
+    pub id: u64,
+    pub name: String,
+    pub club: String,
+}

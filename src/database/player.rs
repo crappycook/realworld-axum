@@ -8,8 +8,22 @@ pub struct Model {
     pub id: u64,
     pub name: String,
     pub club: String,
-    pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
+    #[sea_orm(column_type = "DateTime")]
+    pub created_at: chrono::NaiveDateTime,
+    #[sea_orm(column_type = "DateTime")]
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+impl Default for Model {
+    fn default() -> Self {
+        Self {
+            id: 0,
+            name: String::new(),
+            club: String::new(),
+            created_at: chrono::Local::now().naive_local(),
+            updated_at: chrono::Local::now().naive_local(),
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

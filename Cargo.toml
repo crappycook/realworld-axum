@@ -12,6 +12,7 @@ sea-orm = { version = "0.12.15", features = [
   "sqlx-mysql",
   "runtime-tokio-rustls",
   "macros",
+  "with-chrono",
 ] }
 chrono = { version = "0.4.37", default-features = false, features = [
   "clock",
