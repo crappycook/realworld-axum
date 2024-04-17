@@ -1,12 +1,13 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     Json,
 };
 
 use crate::{
+    constant::LOCAL_TIMEZONE,
     database::player::Model,
-    dto::player::{AddPlayerReq, AddPlayerResp, PlayerResp},
+    dto::player::{AddPlayerReq, AddPlayerResp, PlayerItem, PlayerResp, QueryPlayerReq},
     repo,
     server::AppState,
 };
@@ -56,5 +57,31 @@ pub async fn get(
             }
         }
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(None)),
+    }
+}
+
+pub async fn search(
+    State(state): State<AppState>,
+    Query(req): Query<QueryPlayerReq>,
+) -> (StatusCode, Json<Vec<PlayerItem>>) {
+    let result = repo::player::search(state.db, req.name, req.club).await;
+    match result {
+        Ok(list) => {
+            let rsp = list
+                .into_iter()
+                .map(|p| PlayerItem {
+                    id: p.id,
+                    name: p.name,
+                    club: p.club,
+                    created_at: p
+                        .created_at
+                        .and_local_timezone(LOCAL_TIMEZONE)
+                        .unwrap()
+                        .timestamp(),
+                })
+                .collect();
+            (StatusCode::OK, Json(rsp))
+        }
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(vec![])),
     }
 }

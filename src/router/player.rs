@@ -10,6 +10,7 @@ pub fn register_router() -> Router<AppState> {
         "/player",
         Router::new()
             .route("/:id", get(player::get))
-            .route("/add", post(player::add)),
+            .route("/add", post(player::add))
+            .route("/search", get(player::search)),
     )
 }
