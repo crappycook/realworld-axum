@@ -2,6 +2,7 @@ use sea_orm::entity::prelude::*;
 
 use crate::database::player;
 
+#[tracing::instrument]
 pub async fn create(
     db: DatabaseConnection,
     player: player::ActiveModel,
@@ -9,6 +10,7 @@ pub async fn create(
     player.insert(&db).await
 }
 
+#[tracing::instrument]
 pub async fn get_by_id(
     db: DatabaseConnection,
     id: u64,
@@ -16,6 +18,7 @@ pub async fn get_by_id(
     player::Entity::find_by_id(id).one(&db).await
 }
 
+#[tracing::instrument]
 pub async fn search(
     db: DatabaseConnection,
     name: Option<String>,
@@ -29,4 +32,17 @@ pub async fn search(
         session = session.filter(player::Column::Club.eq(club));
     }
     session.all(&db).await
+}
+
+#[tracing::instrument]
+pub async fn update(
+    db: DatabaseConnection,
+    id: u64,
+    p: player::ActiveModel,
+) -> Result<sea_orm::UpdateResult, DbErr> {
+    player::Entity::update_many()
+        .set(p)
+        .filter(player::Column::Id.eq(id))
+        .exec(&db)
+        .await
 }

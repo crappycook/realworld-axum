@@ -3,11 +3,15 @@ use axum::{
     http::StatusCode,
     Json,
 };
+use sea_orm::Set;
 
 use crate::{
     constant::LOCAL_TIMEZONE,
-    database::player::Model,
-    dto::player::{AddPlayerReq, AddPlayerResp, PlayerItem, PlayerResp, QueryPlayerReq},
+    database::player::{ActiveModel, Model},
+    dto::player::{
+        AddPlayerReq, AddPlayerResp, PlayerItem, PlayerResp, QueryPlayerReq, UpdatePlayerReq,
+        UpdatePlayerResp,
+    },
     repo,
     server::AppState,
 };
@@ -83,5 +87,25 @@ pub async fn search(
             (StatusCode::OK, Json(rsp))
         }
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(vec![])),
+    }
+}
+
+pub async fn update(
+    State(state): State<AppState>,
+    Json(req): Json<UpdatePlayerReq>,
+) -> (StatusCode, Json<UpdatePlayerResp>) {
+    let p = ActiveModel {
+        name: Set(req.name),
+        club: Set(req.club),
+        updated_at: Set(chrono::Local::now().naive_local()),
+        ..Default::default()
+    };
+    let result = repo::player::update(state.db, req.id, p).await;
+    match result {
+        Ok(_) => (StatusCode::OK, Json(UpdatePlayerResp { success: true })),
+        Err(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(UpdatePlayerResp { success: false }),
+        ),
     }
 }

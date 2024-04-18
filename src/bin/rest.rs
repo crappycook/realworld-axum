@@ -3,6 +3,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
     // initialize tracing
     tracing_subscriber::registry()
         .with(
@@ -11,8 +12,6 @@ async fn main() {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
-
-    dotenv::dotenv().ok();
 
     let path = std::env::var("CONFIG_FILE").expect("CONFIG_FILE not found");
     let config = AppConfig::load_from_file(path);

@@ -44,7 +44,7 @@ pub struct DatabaseConfig {
 impl DatabaseConfig {
     pub fn get_url(&self) -> String {
         format!(
-            "mysql://{}:{}@{}:{}/{}?charset=utf8mb4&parseTime=True&loc=Local",
+            "mysql://{}:{}@{}:{}/{}?charset=utf8mb4",
             self.username, self.password, self.host, self.port, self.database
         )
     }
