@@ -10,7 +10,7 @@ async fn main() {
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "realworld=info,tower_http=debug,axum::rejection=trace".into()),
         )
-        .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer().json())
         .init();
 
     let path = std::env::var("CONFIG_FILE").expect("CONFIG_FILE not found");
