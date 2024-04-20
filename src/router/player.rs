@@ -12,6 +12,7 @@ pub fn register_router() -> Router<AppState> {
             .route("/:id", get(player::get))
             .route("/add", post(player::add))
             .route("/search", get(player::search))
-            .route("/update", post(player::update)),
+            .route("/update", post(player::update))
+            .route("/delete", post(player::delete)),
     )
 }

@@ -46,3 +46,8 @@ pub async fn update(
         .exec(&db)
         .await
 }
+
+#[tracing::instrument]
+pub async fn delete(db: DatabaseConnection, id: u64) -> Result<sea_orm::DeleteResult, DbErr> {
+    player::Entity::delete_by_id(id).exec(&db).await
+}

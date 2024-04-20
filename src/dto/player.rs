@@ -23,6 +23,16 @@ pub struct UpdatePlayerResp {
     pub success: bool,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct DeletePlayerReq {
+    pub id: u64,
+}
+
+#[derive(Serialize, Debug)]
+pub struct DeletePlayerResp {
+    pub success: bool,
+}
+
 #[derive(Serialize, Debug)]
 pub struct PlayerResp {
     pub id: u64,

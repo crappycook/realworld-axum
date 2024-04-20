@@ -8,10 +8,7 @@ use sea_orm::Set;
 use crate::{
     constant::LOCAL_TIMEZONE,
     database::player::{ActiveModel, Model},
-    dto::player::{
-        AddPlayerReq, AddPlayerResp, PlayerItem, PlayerResp, QueryPlayerReq, UpdatePlayerReq,
-        UpdatePlayerResp,
-    },
+    dto::player::*,
     repo,
     server::AppState,
 };
@@ -106,6 +103,20 @@ pub async fn update(
         Err(_) => (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(UpdatePlayerResp { success: false }),
+        ),
+    }
+}
+
+pub async fn delete(
+    State(state): State<AppState>,
+    Json(req): Json<DeletePlayerReq>,
+) -> (StatusCode, Json<DeletePlayerResp>) {
+    let result = repo::player::delete(state.db, req.id).await;
+    match result {
+        Ok(_) => (StatusCode::OK, Json(DeletePlayerResp { success: true })),
+        Err(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(DeletePlayerResp { success: false }),
         ),
     }
 }
